@@ -339,25 +339,22 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     m.identity();
     m.rotateY(turnAngle);
 
-    m.save();
-       m.translate(0,-2,0);
-       m.scale(6,.01,6);
-       drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 1);
-    m.restore();
 
-    for (let z = -3 ; z <= 3 ; z += 2)
-    for (let x = -3 ; x <= 3 ; x += 2) {
-       m.save();
-          let y = Math.max(Math.abs(x),Math.abs(z)) / 3 - 1 +
-	          noise.noise(x, 0, 100 * z + state.time / 2) / 5;
-          m.translate(x, y, z);
-          m.scale(.3,.3,.3);
-          drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
-          m.translate(2, 0, 0);
-          drawShape([1,1,1], gl.TRIANGLE_STRIP, sphereV);
-          m.translate(2, 0, 0);
-          drawShape([1,1,1], gl.TRIANGLE_STRIP, torusV);
-       m.restore();
+
+    for (let z = -3 ; z <= 3 ; z += 2) {
+        for (let x = -3 ; x <= 3 ; x += 2) {
+            m.save();
+                let y = Math.max(Math.abs(x),Math.abs(z)) / 3 - 1 +
+                    noise.noise(x, 0, 100 * z + state.time / 2) / 5;
+                m.translate(x, y, z);
+                m.scale(.3,.3,.3);
+                drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+                m.translate(2, 0, 0);
+                drawShape([1,1,1], gl.TRIANGLE_STRIP, sphereV, 1);
+                m.translate(2, 0, 0);
+                drawShape([1,1,1], gl.TRIANGLE_STRIP, torusV, 0);
+            m.restore();
+        }
     }
 }
 
