@@ -1,6 +1,45 @@
 "use strict"
 
 ////////////////////////////// MATRIX SUPPORT
+let dot = (a, b) => {
+    let value = 0;
+    for (let i = 0 ; i < a.length ; i++)
+       value += a[i] * b[i];
+    return value;
+ }
+ 
+ let add = (a, b) => {
+     let c = [];
+     for (let i = 0; i < a.length; i++)
+         c.push(a[i] + b[i]);
+     return c;
+ }
+ 
+ let subtract = (a,b) => {
+    let c = [];
+    for (let i = 0 ; i < a.length ; i++)
+       c.push(a[i] - b[i]);
+    return c;
+ }
+ 
+ let multVecScale = (a, vec) => {
+     let c = [];
+     for (let i = 0; i < vec.length; i++)
+         c.push(vec[i] * a);
+     return c;
+ }
+ 
+ let normalize = a => {
+    let s = Math.sqrt(dot(a, a)), b = [];
+    for (let i = 0 ; i < a.length ; i++)
+       b.push(a[i] / s);
+    return b;
+ }
+ 
+ let cross = (a, b) => [ a[1] * b[2] - a[2] * b[1],
+                         a[2] * b[0] - a[0] * b[2],
+                         a[0] * b[1] - a[1] * b[0] ];
+ 
 
 let cos = t => Math.cos(t);
 let sin = t => Math.sin(t);
@@ -58,12 +97,105 @@ let createCubeVertices = () => {
    return V;
 }
 
-let cubeVertices = createCubeVertices();
+function sphere(u, v) { 
+    let theta = 2*Math.PI*u
+    let phi = Math.PI*v - Math.PI/2
 
+    let x = Math.cos(theta)*Math.cos(phi)
+    let y = Math.sin(theta)*Math.cos(phi)
+    let z = Math.sin(phi)
+    return [x, y, z, x, y, z, u, v]
+}
+
+function torus(u, v) {
+    let theta = 2*Math.PI*u;
+    let phi = 2*Math.PI*v;
+
+    let r = 0.2;
+
+    let x =Math.cos(theta)*(1 + r*Math.cos(phi));
+    let y =Math.sin(theta)*(1 + r*Math.cos(phi));
+    let z = r*Math.sin(phi);
+
+    let nx =Math.cos(theta)*Math.cos(phi);
+    let ny =Math.sin(theta)*Math.cos(phi);
+    let nz =Math.sin(phi);
+
+    return [x,y,z, nx,ny,nz, u, v];
+}
+
+function openTube(u, v) { 
+    theta = 2*Math.PI*u;
+    x = cos(theta);
+    y = sin(theta);
+    z = 2*v - 1;
+    return [x,y,z, x,y,0, u, v];
+}
+
+function cylinder(u, v) {
+    let c = Math.cos(2*Math.PI*u);
+    let s = Math.sin(2*Math.PI*u);
+    let z = Math.max(-1, Math.min(1, 10*v - 5));
+    
+    switch (Math.floor(5.001 * v)) {
+        case 0: case 5: return [ 0,0,z, 0,0,z , u, v]; // center of back/front end cap
+        case 1: case 4: return [ c,s,z, 0,0,z , u, v];// perimeter of back/front end cap
+        case 2: case 3: return [ c,s,z, c,s,0 , u, v]; // back/front of cylindrical tube
+    }
+}
+
+function createMesh(M, N, uvToShape, arg) {
+    let ret = [];
+    if (M == 1 && N == 1) {
+        throw "No triangles!";
+    }
+
+    let addPoint = (u, v) => {
+        let xyz = uvToShape(u, v, arg);
+        ret = ret.concat(xyz);
+    }
+
+    let dx = 1.0 / (M - 1); 
+    let dy = 1.0 / (N - 1);
+    // zigzag
+    // There are N-1 rows, 1 => N-1
+    let num_triangles = 2 * (M - 1);
+
+    for (let r = 1; r < N; r++) {
+        let c = 1 - r % 2;
+        c = Math.max(c, 0)
+        c = Math.min(c, 1)
+        let sign = (r % 2 == 1 ? 1 : -1);
+
+        c = 0;
+        sign = 1;
+
+        let mdown = (r - 1) * dy, mup = r * dy ;
+        for (let t = 0; t < num_triangles; t += 2) {
+            if (c > 1) break;
+            addPoint(c, mdown);
+            addPoint(c, mup);
+            c = c + sign * dx ;
+            addPoint(c, mdown)
+            addPoint(c, mup);
+        }
+    }
+    return ret;
+}
+
+let cubeVertices = createCubeVertices();
+let sphereV = createMesh(30, 30, sphere);
+let torusV = createMesh(30, 30, torus);
+let cylinderV = createMesh(30, 30, cylinder);
 ////////////////////////////// SCENE SPECIFIC CODE
 
 async function setup(state) {
     hotReloadFile(getPath('week8.js'));
+
+    state.cubeVertices = cubeVertices;
+    state.sphereV = sphereV;
+    state.torusV = torusV;
+    state.cylinderV = cylinderV;
 
     const images = await imgutil.loadImagesPromise([
        getPath("textures/brick.png"),
@@ -221,6 +353,10 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
           m.translate(x, y, z);
           m.scale(.3,.3,.3);
           drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+          m.translate(2, 0, 0);
+          drawShape([1,1,1], gl.TRIANGLE_STRIP, sphereV);
+          m.translate(2, 0, 0);
+          drawShape([1,1,1], gl.TRIANGLE_STRIP, torusV);
        m.restore();
     }
 }
