@@ -338,84 +338,86 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
     m.identity();
     m.rotateY(turnAngle);
-    m.translate(0, -1, -3);
 
     // ground
     m.save();
-    m.scale(50, 0.01, 50);
+    m.translate(0, -2, 0);
+    m.scale(50, 0.05, 50);
     drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
     m.restore();
+
 
     // steps
-    m.save();
-        m.rotateY(1.7);
-        m.scale(0.5, 0.05, 0.1);
-        for (let i = 0; i < 10; i++) {
-            m.translate(0, 2, -2);
-            drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
-        }
-    m.restore();
 
-    // first floor
-    m.save();
-    m.translate(-10, 1.2, 0);
-    m.scale(5, 0.01, 5);
-    drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
-    m.restore();
-    // second floor
-    m.save();
-    m.translate(-10, 2.4, 0);
-    m.scale(4, 0.01, 4);
-    drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 1);
-    m.restore();
-    
-    // third
-    m.save();
-    m.translate(-10, 2.4, 15);
-    m.scale(4, 0.01, 4);
-    drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 1);
-    m.restore();
+    for(let i = 0; i < 10; i ++) {
+        m.translate(0, 4*i, 0);
+        m.save();
+            m.translate(0, -2, 0);
+            m.scale(0.2, 0.05, 0.1);
+            for (let i = 0; i < 10; i++) {
+                m.translate(0, 2, -2);
+                drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+            }
+        m.restore();
 
-    // beam
-    m.save();
-    m.translate(0, 0, 5*cos(state.time));
-    m.translate(-8, 2.5, 8);
-    m.rotateX(Math.PI*0.5)
-    m.scale(0.3, 0.3, 0.3);
-    drawShape([1,1,1], gl.TRIANGLE_STRIP, torusV, 0);
-    m.restore();
+        m.save();
+            m.rotateY(0.5*Math.PI);
+            m.translate(2, -1, 0);
+            m.scale(0.2, 0.05, 0.1);
+            for (let i = 0; i < 10; i++) {
+                m.translate(0, 2, -2);
+                drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+            }
+        m.restore();
+
+        m.save();
+            m.rotateY(Math.PI);
+            m.translate(2, 0, 2);
+            m.scale(0.2, 0.05, 0.1);
+            for (let i = 0; i < 10; i++) {
+                m.translate(0, 2, -2);
+                drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+            }
+        m.restore();
+
+        m.save();
+            m.rotateY(-0.5*Math.PI);
+            m.translate(0, 1, 2);
+            m.scale(0.2, 0.05, 0.1);
+            for (let i = 0; i < 10; i++) {
+                m.translate(0, 2, -2);
+                drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+            }
+        m.restore();
+    }
+
 
     // ladder
-    m.save();
-    m.translate(-5, 1.1, 2.5);
-    m.rotateY(0.5*Math.PI);
-    m.save();
-        m.scale(0.01, 0.05, 0.01);
-        m.save();
-        m.translate(20, 0, 0);
-        for(let i = 0; i < 10; i++) {
-            m.translate(0, 2, 0);
-            drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
-        }
-        m.restore();
+    // m.save();
+    //     m.scale(0.01, 0.05, 0.01);
+    //     m.save();
+    //     m.translate(20, 0, 0);
+    //     for(let i = 0; i < 10; i++) {
+    //         m.translate(0, 2, 0);
+    //         drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+    //     }
+    //     m.restore();
 
-        m.save();
-        m.translate(-20, 0, 0);
-        for(let i = 0; i < 10; i++) {
-            m.translate(0, 2, 0);
-            drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
-        }
-        m.restore();
-    m.restore();
-    m.save();
-        m.scale(0.2, 0.01, 0.01);
-        for(let i = 0; i < 10; i++) {
-            m.translate(0, 10, 0);
-            drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
-        }
-    m.restore();
-
-    m.restore();
+    //     m.save();
+    //     m.translate(-20, 0, 0);
+    //     for(let i = 0; i < 10; i++) {
+    //         m.translate(0, 2, 0);
+    //         drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+    //     }
+    //     m.restore();
+    // m.restore();
+    // m.save();
+    //     m.scale(0.2, 0.01, 0.01);
+    //     for(let i = 0; i < 10; i++) {
+    //         m.translate(0, 10, 0);
+    //         drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
+    //     }
+    // m.restore();
 
     // for (let z = -3 ; z <= 3 ; z += 2) {
     //     for (let x = -3 ; x <= 3 ; x += 2) {
