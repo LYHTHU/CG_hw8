@@ -347,9 +347,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     m.restore();
 
     // steps
-    // m.rotateY(0.2*state.time);
-
-
+    m.rotateY(0.2*state.time);
 
     for(let i = 1; i < 10; i ++) {
         m.save();
