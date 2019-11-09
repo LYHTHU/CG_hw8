@@ -346,9 +346,10 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     drawShape([1,1,1], gl.TRIANGLES, cubeVertices, 0);
     m.restore();
 
-
     // steps
-    m.rotateY(0.2*state.time);
+    // m.rotateY(0.2*state.time);
+
+
 
     for(let i = 1; i < 10; i ++) {
         m.save();
